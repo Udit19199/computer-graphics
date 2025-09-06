@@ -1,30 +1,25 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
-int main(int argc, char* argv[]) {
-    // Initialize SDL
+int main() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+        std::cerr << "SDL init error: " << SDL_GetError() << "\n";
         return 1;
     }
 
-    // Create window
-    SDL_Window* window = SDL_CreateWindow("Single Pixel",
-                                        SDL_WINDOWPOS_UNDEFINED,
-                                        SDL_WINDOWPOS_UNDEFINED,
-                                        800, 600,
-                                        SDL_WINDOW_SHOWN);
-    
-    if (window == nullptr) {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+    SDL_Window* window = SDL_CreateWindow("Pixel",
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        800, 600, 0);
+    if (!window) {
+        std::cerr << "Window error: " << SDL_GetError() << "\n";
         SDL_Quit();
         return 1;
     }
 
-    // Create renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == nullptr) {
-        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer) {
+        std::cerr << "Renderer error: " << SDL_GetError() << "\n";
         SDL_DestroyWindow(window);
         SDL_Quit();
         return 1;
@@ -32,36 +27,22 @@ int main(int argc, char* argv[]) {
 
     bool running = true;
     SDL_Event e;
-
     while (running) {
-        // Handle events
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                running = false;
-            }
-        }
+        while (SDL_PollEvent(&e))
+            if (e.type == SDL_QUIT) running = false;
 
-        // Clear screen with black
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);   // black background
         SDL_RenderClear(renderer);
 
-        // Draw ONE red pixel at center of screen (400, 300)
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect pixel = {400, 300, 10, 10}; // 10x10 square for visibility
-        SDL_RenderFillRect(renderer, &pixel);
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // red pixel
+        SDL_RenderDrawPoint(renderer, 400, 300);
 
-        // Present the renderer
         SDL_RenderPresent(renderer);
-        
-        // Small delay
-        SDL_Delay(16);
     }
 
-    // Cleanup
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-
-    std::cout << "Drew a single red pixel at (400, 300)" << std::endl;
     return 0;
 }
+

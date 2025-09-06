@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "/Users/Udit19199/Code/computer-graphics",
+    "command": "clang++ -std=c++17 -I/opt/homebrew/include -I/opt/homebrew/include/SDL2 -D_THREAD_SAFE -L/opt/homebrew/lib -lSDL2 putpixel.cpp -o putpixel",
+    "file": "putpixel.cpp"
+  }
+]
